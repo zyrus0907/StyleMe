@@ -60,3 +60,12 @@ export const createTryOn = (token: string, clothingItemId: string) =>
     body: JSON.stringify({ clothing_item_id: clothingItemId }),
   });
 export const getTryOn = (token: string, id: string) => api<TryOn>(`/try-ons/${id}`, token);
+
+// ---- Wardrobe ----
+export type Outfit = { id: string; name: string | null; result_url: string | null; created_at: string };
+export const saveOutfit = (token: string, tryOnId: string, name?: string) =>
+  api("/wardrobe/outfits", token, {
+    method: "POST",
+    body: JSON.stringify({ try_on_id: tryOnId, name }),
+  });
+export const listOutfits = (token: string) => api<Outfit[]>("/wardrobe/outfits", token);

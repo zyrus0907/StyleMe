@@ -39,3 +39,10 @@ def signed_read_url(path: str, expires_in: int = 3600) -> str:
     """Time-limited public URL for reading. fal.ai fetches this URL."""
     res = supabase.storage.from_(BUCKET).create_signed_url(path, expires_in)
     return res.get("signedURL") or res.get("signed_url") or res.get("signedUrl")
+
+def upload_bytes(path: str, data: bytes, content_type: str = "image/png") -> str:
+    """Upload raw bytes (e.g. a Gemini-generated image) to storage."""
+    supabase.storage.from_(BUCKET).upload(
+        path, data, {"content-type": content_type, "upsert": "true"}
+    )
+    return path
