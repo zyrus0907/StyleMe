@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     SUPABASE_JWT_SECRET: str = ""
     DATABASE_URL: str = ""
     STORAGE_BUCKET: str = "fashion"
+    FRONTEND_ORIGINS: str = "http://localhost:3000"
 
     PER_USER_MONTHLY_TRYON_CAP: int = 100
 
