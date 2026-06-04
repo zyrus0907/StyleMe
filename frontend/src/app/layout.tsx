@@ -1,14 +1,18 @@
 import "./globals.css";
+import Nav from "@/components/Nav";
 
 export const metadata = {
-  title: "StyleMe",
-  description: "Create a fashion profile once, try on anything.",
+  title: "StyleMe — Your virtual fitting room",
+  description: "Build your fashion profile once. See yourself in anything.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Nav />
+        {children}
+      </body>
     </html>
   );
 }
