@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import tryons
+from .api import tryons, photos, profiles, clothing
 
-app = FastAPI(title="Virtual Fashion Assistant API")
+app = FastAPI(title="StyleMe API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -13,6 +13,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(photos.router)
+app.include_router(profiles.router)
+app.include_router(clothing.router)
 app.include_router(tryons.router)
 
 
