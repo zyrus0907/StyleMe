@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import tryons, photos, profiles, clothing, wardrobe
+from .api import tryons, photos, profiles, clothing, wardrobe, account
 
 app = FastAPI(title="StyleMe API")
 
@@ -18,6 +18,7 @@ app.include_router(profiles.router)
 app.include_router(clothing.router)
 app.include_router(tryons.router)
 app.include_router(wardrobe.router)
+app.include_router(account.router)
 
 
 @app.get("/health")

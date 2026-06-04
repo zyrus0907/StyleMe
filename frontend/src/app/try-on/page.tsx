@@ -10,6 +10,7 @@ const BUCKET = "fashion";
 export default function TryOnPage() {
   const [mode, setMode] = useState<"upload" | "url">("upload");
   const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [url, setUrl] = useState("");
   const [category, setCategory] = useState("upper");
   const [status, setStatus] = useState("");
@@ -21,11 +22,19 @@ export default function TryOnPage() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) router.push("/sign-in");
-    });
+    supabase.auth.getSession().then(({ data }) => { if (!data.session) router.push("/sign-in"); });
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [router]);
+
+  function pickFile(f: File | null) {
+    setFile(f);
+    setPreview(f ? URL.createObjectURL(f) : null);
+  }
+
+  function reset() {
+    setResult(null); setTryOnId(null); setSaved(false); setStatus("");
+    setFile(null); setPreview(null); setUrl("");
+  }
 
   async function generate() {
     setBusy(true); setResult(null); setSaved(false); setTryOnId(null); setStatus("Preparing…");
@@ -72,20 +81,29 @@ export default function TryOnPage() {
     <main className="page container">
       <p className="eyebrow">The Fitting Room</p>
       <h1>Try something on</h1>
+      <p className="muted" style={{ marginBottom: 24 }}>
+        Upload a piece or paste a link — we’ll dress your saved profile in it.
+      </p>
 
-      <div className="panel" style={{ marginTop: 28 }}>
+      <div className="panel">
         <div className="seg">
           <button className={mode === "upload" ? "active" : ""} onClick={() => setMode("upload")}>Upload image</button>
           <button className={mode === "url" ? "active" : ""} onClick={() => setMode("url")}>Paste URL</button>
         </div>
 
         {mode === "upload" ? (
-          <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+          <>
+            <input type="file" accept="image/*" onChange={(e) => pickFile(e.target.files?.[0] ?? null)} />
+            {preview && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={preview} alt="garment" className="garment-preview" />
+            )}
+          </>
         ) : (
           <input type="text" placeholder="https://.../shirt.jpg" value={url} onChange={(e) => setUrl(e.target.value)} />
         )}
 
-        <label>Category</label>
+        <label style={{ marginTop: 16 }}>Category</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="upper">Top / upper body</option>
           <option value="lower">Bottom / lower body</option>
@@ -106,10 +124,11 @@ export default function TryOnPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={result} alt="try-on result" />
             </div>
-            <div style={{ marginTop: 14 }}>
-              <button className="btn btn-ghost btn-block" onClick={save} disabled={saved}>
-                {saved ? "Saved to wardrobe ✓" : "Save to wardrobe"}
+            <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={save} disabled={saved}>
+                {saved ? "Saved ✓" : "Save to wardrobe"}
               </button>
+              <button className="btn btn-ghost" onClick={reset}>Try another</button>
             </div>
           </>
         )}

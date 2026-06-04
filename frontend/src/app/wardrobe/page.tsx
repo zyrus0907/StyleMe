@@ -21,6 +21,20 @@ export default function WardrobePage() {
     })();
   }, [router]);
 
+  async function download(url: string, name: string) {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch {
+      window.open(url, "_blank");
+    }
+  }
+
   return (
     <main className="page container">
       <p className="eyebrow">Your Lookbook</p>
@@ -35,8 +49,13 @@ export default function WardrobePage() {
         <div className="grid">
           {outfits.map((o) => (
             <div key={o.id} className="tile">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {o.result_url && <img src={o.result_url} alt="" />}
+              {o.result_url && (
+                <>
+                  <button className="dl" title="Download" onClick={() => download(o.result_url!, `styleme-${o.id}.png`)}>↓</button>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={o.result_url} alt="" />
+                </>
+              )}
             </div>
           ))}
         </div>

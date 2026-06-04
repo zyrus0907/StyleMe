@@ -28,6 +28,7 @@ export default function Nav() {
         <nav className="nav-links">
           <Link href="/try-on">Fitting Room</Link>
           <Link href="/wardrobe">Wardrobe</Link>
+          {signedIn && <Link href="/settings">Settings</Link>}
           {signedIn ? (
             <button className="nav-cta" onClick={signOut}>Sign out</button>
           ) : (

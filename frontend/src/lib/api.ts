@@ -69,3 +69,6 @@ export const saveOutfit = (token: string, tryOnId: string, name?: string) =>
     body: JSON.stringify({ try_on_id: tryOnId, name }),
   });
 export const listOutfits = (token: string) => api<Outfit[]>("/wardrobe/outfits", token);
+
+// ---- Account ----
+export const deleteAccount = (token: string) => api("/account", token, { method: "DELETE" });
