@@ -13,35 +13,40 @@ export default function SignUp() {
   const router = useRouter();
 
   async function submit() {
-    setBusy(true);
-    setMsg("");
+    setBusy(true); setMsg("");
     const { data, error } = await supabase.auth.signUp({ email, password });
     setBusy(false);
-    if (error) {
-      setMsg(error.message);
-      return;
-    }
-    if (data.session) {
-      router.push("/onboarding"); // email confirmation is off -> straight in
-    } else {
-      setMsg("Account created. Check your email to confirm, then sign in.");
-    }
+    if (error) { setMsg(error.message); return; }
+    if (data.session) router.push("/onboarding");
+    else setMsg("Account created. Check your email to confirm, then sign in.");
   }
 
   return (
-    <main className="card">
-      <h1>Create account</h1>
-      <label>Email</label>
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <label>Password</label>
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      {msg && <p className="error">{msg}</p>}
-      <button onClick={submit} disabled={busy || !email || !password}>
-        {busy ? "Working…" : "Sign up"}
-      </button>
-      <p style={{ marginTop: 16, fontSize: 14 }}>
-        Already have an account? <Link href="/sign-in">Sign in</Link>
-      </p>
-    </main>
+    <div className="auth-wrap">
+      <aside className="auth-brand">
+        <span className="mark">STYLEME</span>
+        <p className="quote">“The fitting room, reimagined for the way you actually shop.”</p>
+        <span className="foot">Your virtual atelier</span>
+      </aside>
+      <section className="auth-form-side">
+        <div className="auth-card">
+          <h1 className="auth-title">Create account</h1>
+          <p className="auth-sub">Set your profile once. Try on everything after.</p>
+          <div className="field">
+            <label>Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>Password</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          {msg && <p className="error">{msg}</p>}
+          <button className="btn btn-primary btn-block" onClick={submit} disabled={busy || !email || !password}>
+            {busy ? "Working…" : "Sign up"}
+          </button>
+          <p className="switch-link">Already have an account? <Link href="/sign-in">Sign in</Link></p>
+        </div>
+      </section>
+    </div>
   );
 }

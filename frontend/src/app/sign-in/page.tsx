@@ -13,31 +13,39 @@ export default function SignIn() {
   const router = useRouter();
 
   async function submit() {
-    setBusy(true);
-    setMsg("");
+    setBusy(true); setMsg("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) {
-      setMsg(error.message);
-      return;
-    }
+    if (error) { setMsg(error.message); return; }
     router.push("/dashboard");
   }
 
   return (
-    <main className="card">
-      <h1>Sign in</h1>
-      <label>Email</label>
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <label>Password</label>
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      {msg && <p className="error">{msg}</p>}
-      <button onClick={submit} disabled={busy || !email || !password}>
-        {busy ? "Working…" : "Sign in"}
-      </button>
-      <p style={{ marginTop: 16, fontSize: 14 }}>
-        No account? <Link href="/sign-up">Create one</Link>
-      </p>
-    </main>
+    <div className="auth-wrap">
+      <aside className="auth-brand">
+        <span className="mark">STYLEME</span>
+        <p className="quote">“Welcome back. Your wardrobe missed you.”</p>
+        <span className="foot">Your virtual atelier</span>
+      </aside>
+      <section className="auth-form-side">
+        <div className="auth-card">
+          <h1 className="auth-title">Sign in</h1>
+          <p className="auth-sub">Pick up right where you left off.</p>
+          <div className="field">
+            <label>Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>Password</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          {msg && <p className="error">{msg}</p>}
+          <button className="btn btn-primary btn-block" onClick={submit} disabled={busy || !email || !password}>
+            {busy ? "Working…" : "Sign in"}
+          </button>
+          <p className="switch-link">No account? <Link href="/sign-up">Create one</Link></p>
+        </div>
+      </section>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Nav() {
   const [signedIn, setSignedIn] = useState(false);
@@ -32,6 +33,7 @@ export default function Nav() {
           ) : (
             <Link href="/sign-in" className="nav-cta">Sign in</Link>
           )}
+          <ThemeToggle />
         </nav>
       </div>
     </header>
