@@ -22,12 +22,7 @@ def _user_wardrobe_id(user_id: str) -> str:
 @router.post("/outfits")
 def save_outfit(body: SaveOutfit, user_id: str = Depends(get_current_user_id)):
     t = (
-        supabase.table("try_ons")
-        .select("id")
-        .eq("id", body.try_on_id)
-        .eq("user_id", user_id)
-        .execute()
-        .data
+        supabase.table("try_ons").select("id").eq("id", body.try_on_id).eq("user_id", user_id).execute().data
     )
     if not t:
         raise HTTPException(404, "Try-on not found")
@@ -44,14 +39,16 @@ def save_outfit(body: SaveOutfit, user_id: str = Depends(get_current_user_id)):
 def list_outfits(user_id: str = Depends(get_current_user_id)):
     wid = _user_wardrobe_id(user_id)
     outfits = (
-        supabase.table("saved_outfits")
-        .select("*")
-        .eq("wardrobe_id", wid)
-        .order("created_at", desc=True)
-        .execute()
-        .data
+        supabase.table("saved_outfits").select("*").eq("wardrobe_id", wid).order("created_at", desc=True).execute().data
     )
     for o in outfits:
-        t = supabase.table("try_ons").select("result_url").eq("id", o["try_on_id"]).execute().data
+        t = supabase.table("try_ons").select("result_url, clothing_item_id").eq("id", o["try_on_id"]).execute().data
         o["result_url"] = t[0]["result_url"] if t else None
+        o["shop_url"] = None
+        o["item_name"] = None
+        if t and t[0].get("clothing_item_id"):
+            c = supabase.table("clothing_items").select("shop_url, name").eq("id", t[0]["clothing_item_id"]).execute().data
+            if c:
+                o["shop_url"] = c[0].get("shop_url")
+                o["item_name"] = c[0].get("name")
     return outfits

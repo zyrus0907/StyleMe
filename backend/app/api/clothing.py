@@ -1,7 +1,3 @@
-"""Clothing item endpoints. Garment-via-upload reuses the same storage flow
-as photos. Garment-via-URL scraping comes in a later step; for now you can
-also pass a direct external image URL.
-"""
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
@@ -17,9 +13,10 @@ class PresignReq(BaseModel):
 
 
 class CreateClothing(BaseModel):
-    path: str | None = None          # storage path (uploaded garment)
-    external_url: str | None = None  # OR a direct external image URL
-    category: str = "upper"          # upper | lower | full | other
+    path: str | None = None
+    external_url: str | None = None
+    shop_url: str | None = None      # where to buy it
+    category: str = "upper"
     name: str | None = None
 
 
@@ -31,14 +28,14 @@ def presign(body: PresignReq, user_id: str = Depends(get_current_user_id)):
 
 @router.post("")
 def create(body: CreateClothing, user_id: str = Depends(get_current_user_id)):
-    row = (
+    return (
         supabase.table("clothing_items")
         .insert(
             {
                 "user_id": user_id,
                 "source": "upload" if body.path else "url",
                 "source_url": body.external_url,
-                # store storage path if uploaded, else the external url
+                "shop_url": body.shop_url,
                 "image_url": body.path or body.external_url,
                 "category": body.category,
                 "name": body.name,
@@ -47,7 +44,6 @@ def create(body: CreateClothing, user_id: str = Depends(get_current_user_id)):
         .execute()
         .data[0]
     )
-    return row
 
 
 @router.get("")

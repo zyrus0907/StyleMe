@@ -56,6 +56,13 @@ export default function WardrobePage() {
                   <img src={o.result_url} alt="" />
                 </>
               )}
+              {o.shop_url && (
+                <div className="tile-foot">
+                  <a className="shop-link" href={o.shop_url} target="_blank" rel="noopener noreferrer">
+                    Shop this item ↗
+                  </a>
+                </div>
+              )}
             </div>
           ))}
         </div>

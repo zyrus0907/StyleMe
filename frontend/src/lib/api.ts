@@ -44,7 +44,7 @@ export const presignGarment = (token: string, ext = "jpg") =>
 
 export const createClothing = (
   token: string,
-  data: { path?: string; external_url?: string; category?: string; name?: string }
+  data: { path?: string; external_url?: string; shop_url?: string; category?: string; name?: string }
 ) => api<{ id: string }>("/clothing", token, { method: "POST", body: JSON.stringify(data) });
 
 // ---- Try-ons ----
@@ -62,7 +62,14 @@ export const createTryOn = (token: string, clothingItemId: string) =>
 export const getTryOn = (token: string, id: string) => api<TryOn>(`/try-ons/${id}`, token);
 
 // ---- Wardrobe ----
-export type Outfit = { id: string; name: string | null; result_url: string | null; created_at: string };
+export type Outfit = {
+  id: string;
+  name: string | null;
+  result_url: string | null;
+  shop_url: string | null;
+  item_name: string | null;
+  created_at: string;
+};
 export const saveOutfit = (token: string, tryOnId: string, name?: string) =>
   api("/wardrobe/outfits", token, {
     method: "POST",

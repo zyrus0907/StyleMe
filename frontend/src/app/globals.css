@@ -148,3 +148,7 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 .compare-row { display: grid; gap: 16px; margin-top: 20px; }
 .compare-cell { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--card); }
 .compare-cell img { width: 100%; display: block; }
+
+.tile-foot { padding: 10px 12px; font-size: 13px; }
+.shop-link { color: var(--accent); }
+.shop-link:hover { text-decoration: underline; }

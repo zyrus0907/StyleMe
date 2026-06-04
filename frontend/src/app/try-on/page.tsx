@@ -12,9 +12,11 @@ export default function TryOnPage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [url, setUrl] = useState("");
+  const [shopUrl, setShopUrl] = useState("");
   const [category, setCategory] = useState("upper");
   const [status, setStatus] = useState("");
   const [result, setResult] = useState<string | null>(null);
+  const [resultShop, setResultShop] = useState<string | null>(null);
   const [tryOnId, setTryOnId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -32,8 +34,8 @@ export default function TryOnPage() {
   }
 
   function reset() {
-    setResult(null); setTryOnId(null); setSaved(false); setStatus("");
-    setFile(null); setPreview(null); setUrl("");
+    setResult(null); setResultShop(null); setTryOnId(null); setSaved(false); setStatus("");
+    setFile(null); setPreview(null); setUrl(""); setShopUrl("");
   }
 
   async function generate() {
@@ -41,7 +43,10 @@ export default function TryOnPage() {
     try {
       const token = await getToken();
       if (!token) throw new Error("Not signed in");
-      const payload: { category: string; path?: string; external_url?: string } = { category };
+      const payload: { category: string; path?: string; external_url?: string; shop_url?: string } = {
+        category,
+        shop_url: shopUrl || undefined,
+      };
       if (mode === "upload") {
         if (!file) throw new Error("Choose a garment image");
         const { path, token: uploadToken } = await presignGarment(token, "jpg");
@@ -59,7 +64,8 @@ export default function TryOnPage() {
         const t = await getTryOn(token, tryon.id);
         if (t.status === "done") {
           clearInterval(pollRef.current!);
-          setResult(t.result_url); setTryOnId(t.id); setStatus(""); setBusy(false);
+          setResult(t.result_url); setResultShop(shopUrl || null); setTryOnId(t.id);
+          setStatus(""); setBusy(false);
         } else if (t.status === "failed") {
           clearInterval(pollRef.current!);
           setStatus("Failed: " + (t.error ?? "unknown error")); setBusy(false);
@@ -103,6 +109,14 @@ export default function TryOnPage() {
           <input type="text" placeholder="https://.../shirt.jpg" value={url} onChange={(e) => setUrl(e.target.value)} />
         )}
 
+        <label style={{ marginTop: 16 }}>Where to buy (optional)</label>
+        <input
+          type="text"
+          placeholder="https://store.com/product/..."
+          value={shopUrl}
+          onChange={(e) => setShopUrl(e.target.value)}
+        />
+
         <label style={{ marginTop: 16 }}>Category</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="upper">Top / upper body</option>
@@ -124,6 +138,13 @@ export default function TryOnPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={result} alt="try-on result" />
             </div>
+            {resultShop && (
+              <p style={{ marginTop: 12 }}>
+                <a className="shop-link" href={resultShop} target="_blank" rel="noopener noreferrer">
+                  Shop this item ↗
+                </a>
+              </p>
+            )}
             <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
               <button className="btn btn-primary" style={{ flex: 1 }} onClick={save} disabled={saved}>
                 {saved ? "Saved ✓" : "Save to wardrobe"}
